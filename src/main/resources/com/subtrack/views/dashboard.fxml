@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.subtrack.controller.DashboardController"
+            styleClass="root">
+
+    <!-- Top Bar -->
+    <top>
+        <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="16">
+            <Label text="SubTrack" styleClass="label-title" HBox.hgrow="NEVER"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="notificationBtn" text="🔔 Alertas" styleClass="btn-secondary,btn-small"
+                    onAction="#handleNotifications"/>
+            <Button text="👤 Perfil" styleClass="btn-secondary,btn-small" onAction="#handleProfile"/>
+            <Button text="Sair" styleClass="btn-outline,btn-small" onAction="#handleLogout"/>
+        </HBox>
+    </top>
+
+    <!-- Main Content -->
+    <center>
+        <VBox spacing="16" style="-fx-padding: 20;">
+
+            <!-- Action Buttons Row -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button text="+ Nova Assinatura" onAction="#handleAddSubscription"/>
+                <Button text="📁 Categorias" styleClass="btn-secondary" onAction="#handleCategories"/>
+                <Button text="💳 Métodos de Pagamento" styleClass="btn-secondary" onAction="#handlePaymentMethods"/>
+                <Button text="📋 Histórico de Pagamentos" styleClass="btn-secondary" onAction="#handlePaymentHistory"/>
+            </HBox>
+
+            <!-- Spending Summary -->
+            <HBox spacing="16">
+                <VBox styleClass="spending-card" HBox.hgrow="ALWAYS" spacing="8">
+                    <Label text="Gastos Mensais" styleClass="label-section"/>
+                    <Label fx:id="spendingLabel" text="R$0,00" styleClass="spending-amount"/>
+                    <Label fx:id="limitLabel" text="Sem limite definido" styleClass="spending-limit"/>
+                    <ProgressBar fx:id="spendingProgress" progress="0" maxWidth="Infinity"
+                                 prefHeight="10"/>
+                </VBox>
+                <VBox styleClass="spending-card" spacing="8" minWidth="180">
+                    <Label text="Assinaturas Ativas" styleClass="label-section"/>
+                    <Label fx:id="activeCountLabel" text="0" styleClass="spending-amount"/>
+                    <Label text="assinaturas rastreadas" styleClass="label-muted"/>
+                </VBox>
+            </HBox>
+
+            <!-- Filters -->
+            <HBox spacing="10" alignment="CENTER_LEFT" styleClass="card-flat">
+                <Label text="Filtros:" styleClass="label-muted"/>
+                <TextField fx:id="searchField" promptText="Procurar por nome..." prefWidth="180"/>
+                <ComboBox fx:id="categoryFilter" promptText="Categoria" prefWidth="150"/>
+                <ComboBox fx:id="paymentMethodFilter" promptText="Método de Pagamento" prefWidth="150"/>
+                <ComboBox fx:id="statusFilter" promptText="Status" prefWidth="120"/>
+                <Button text="Limpar" styleClass="btn-outline,btn-small" onAction="#handleClearFilters"/>
+            </HBox>
+
+            <!-- Content: Table + Charts -->
+            <SplitPane dividerPositions="0.6" VBox.vgrow="ALWAYS">
+                <!-- Subscriptions Table -->
+                <TableView fx:id="subscriptionTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colName" text="Nome" prefWidth="160"/>
+                        <TableColumn fx:id="colPrice" text="Preço" prefWidth="80"/>
+                        <TableColumn fx:id="colPeriod" text="Período" prefWidth="80"/>
+                        <TableColumn fx:id="colNextDue" text="Próximo Vencimento" prefWidth="100"/>
+                        <TableColumn fx:id="colCategory" text="Categoria" prefWidth="110"/>
+                        <TableColumn fx:id="colPayMethod" text="Método de Pagamento" prefWidth="110"/>
+                        <TableColumn fx:id="colStatus" text="Status" prefWidth="80"/>
+                        <TableColumn fx:id="colActions" text="Actions" prefWidth="140"/>
+                    </columns>
+                </TableView>
+
+                <!-- Charts Panel -->
+                <VBox spacing="10" style="-fx-padding: 0 0 0 10;">
+                    <PieChart fx:id="categoryPieChart" title="Gastos por Categoria"
+                              prefHeight="240" legendVisible="true" labelsVisible="false"/>
+                    <PieChart fx:id="paymentMethodPieChart" title="Gastos por Método de Pagamento"
+                              prefHeight="240" legendVisible="true" labelsVisible="false"/>
+                </VBox>
+            </SplitPane>
+        </VBox>
+    </center>
+</BorderPane>

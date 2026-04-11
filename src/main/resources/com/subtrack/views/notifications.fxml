@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="16" style="-fx-padding: 24;" prefWidth="500" prefHeight="480"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.subtrack.controller.NotificationController">
+
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="Notificações" styleClass="label-section"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Marcar Tudo como Lido" styleClass="btn-outline,btn-small" onAction="#handleMarkAll"/>
+    </HBox>
+
+    <ListView fx:id="notificationList" VBox.vgrow="ALWAYS"/>
+
+    <HBox alignment="CENTER_RIGHT">
+        <Button text="Fechar" styleClass="btn-outline" onAction="#handleClose"/>
+    </HBox>
+</VBox>

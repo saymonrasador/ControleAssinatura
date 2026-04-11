@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="20" style="-fx-padding: 30;" prefWidth="440"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.subtrack.controller.ProfileController">
+
+    <Label text="Perfil &amp; Preferências" styleClass="label-section"/>
+
+    <VBox spacing="4" styleClass="card-flat">
+        <Label text="INFORMAÇÕES DO USUÁRIO" styleClass="label-muted"/>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Nome:" styleClass="label"/>
+            <Label fx:id="nameLabel" styleClass="label"/>
+        </HBox>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Email:" styleClass="label"/>
+            <Label fx:id="emailLabel" styleClass="label-muted"/>
+        </HBox>
+    </VBox>
+
+    <Separator/>
+
+    <Label text="PREFERÊNCIAS" styleClass="label-muted"/>
+
+    <VBox spacing="4">
+        <Label text="Avise-me antes do prazo (em dias)." styleClass="label"/>
+        <TextField fx:id="alertDaysField" promptText="e.g., 3"/>
+    </VBox>
+
+    <VBox spacing="4">
+        <Label text="Limite de gasto mensal (R$)" styleClass="label"/>
+        <TextField fx:id="spendingLimitField" promptText="e.g., 100.00"/>
+    </VBox>
+
+    <Label fx:id="feedbackLabel" wrapText="true"/>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Cancelar" styleClass="btn-outline" onAction="#handleCancel"/>
+        <Button text="Salvar Preferências" onAction="#handleSave"/>
+    </HBox>
+</VBox>

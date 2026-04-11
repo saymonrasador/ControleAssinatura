@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane styleClass="auth-container" xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.subtrack.controller.RegisterController"
+           prefWidth="900" prefHeight="650">
+
+    <VBox styleClass="auth-card" spacing="16" alignment="CENTER">
+        <Label text="Criar Conta" styleClass="label-title"/>
+        <Label text="Entre para gerenciar suas assinaturas" styleClass="label-subtitle"/>
+
+        <VBox spacing="4">
+            <Label text="Nome completo *" styleClass="label-muted"/>
+            <TextField fx:id="nameField" promptText="Digite seu nome"/>
+        </VBox>
+
+        <VBox spacing="4">
+            <Label text="Email *" styleClass="label-muted"/>
+            <TextField fx:id="emailField" promptText="Digite seu email"/>
+        </VBox>
+
+        <VBox spacing="4">
+            <Label text="Senha *" styleClass="label-muted"/>
+            <PasswordField fx:id="passwordField" promptText="Pelo menos 8 caracteres"/>
+        </VBox>
+
+        <VBox spacing="4">
+            <Label text="Confirmar senha *" styleClass="label-muted"/>
+            <PasswordField fx:id="confirmPasswordField" promptText="Repita sua senha"/>
+        </VBox>
+
+        <Label fx:id="errorLabel" styleClass="label-error" wrapText="true"/>
+
+        <Button text="Criar Conta" onAction="#handleRegister" maxWidth="Infinity"/>
+
+        <HBox alignment="CENTER" spacing="6">
+            <Label text="Já tem uma conta?" styleClass="label-muted"/>
+            <Hyperlink text="Entrar" onAction="#handleLoginLink"/>
+        </HBox>
+    </VBox>
+</StackPane>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.subtrack.controller.PaymentHistoryController"
+            styleClass="root">
+
+    <top>
+        <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="16">
+            <Label text="Histórico de Pagamentos" styleClass="label-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="← Voltar para Dashboard" styleClass="btn-outline,btn-small"
+                    onAction="#handleBack"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="16" style="-fx-padding: 20;">
+
+            <!-- Filters -->
+            <HBox spacing="10" alignment="CENTER_LEFT" styleClass="card-flat">
+                <Label text="Filtros:" styleClass="label-muted"/>
+                <ComboBox fx:id="subscriptionFilter" promptText="Assinatura" prefWidth="160"/>
+                <TextField fx:id="categoryFilterField" promptText="Categoria" prefWidth="130"/>
+                <TextField fx:id="payMethodFilterField" promptText="Método de Pagamento" prefWidth="130"/>
+                <TextField fx:id="competenceField" promptText="Ciclo (YYYY-MM)" prefWidth="120"/>
+                <DatePicker fx:id="startDatePicker" promptText="De" prefWidth="130"/>
+                <DatePicker fx:id="endDatePicker" promptText="Até" prefWidth="130"/>
+                <Button text="Buscar" onAction="#handleSearch" styleClass="btn-small"/>
+                <Button text="Limpar" styleClass="btn-outline,btn-small" onAction="#handleClear"/>
+            </HBox>
+
+            <!-- Content: Table + Chart -->
+            <SplitPane dividerPositions="0.65" VBox.vgrow="ALWAYS">
+                <TableView fx:id="historyTable">
+                    <columns>
+                        <TableColumn fx:id="colSubscription" text="Assinaturas" prefWidth="150"/>
+                        <TableColumn fx:id="colCategory" text="Categoria" prefWidth="120"/>
+                        <TableColumn fx:id="colPayMethod" text="Método de Pagamento" prefWidth="120"/>
+                        <TableColumn fx:id="colAmount" text="Valor" prefWidth="80"/>
+                        <TableColumn fx:id="colDate" text="Data" prefWidth="100"/>
+                        <TableColumn fx:id="colCompetence" text="Ciclo" prefWidth="80"/>
+                    </columns>
+                </TableView>
+
+                <VBox spacing="10" style="-fx-padding: 0 0 0 10;">
+                    <PieChart fx:id="historyPieChart" title="Pagamentos por Categoria"
+                              prefHeight="280" legendVisible="true" labelsVisible="false"/>
+                    <Label fx:id="totalLabel" text="Total: $0.00"
+                           styleClass="spending-amount" style="-fx-font-size: 20px;"/>
+                </VBox>
+            </SplitPane>
+        </VBox>
+    </center>
+</BorderPane>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="16" style="-fx-padding: 24;" prefWidth="500" prefHeight="500"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.subtrack.controller.CategoryManagerController">
+
+    <Label text="Gerenciar Categorias" styleClass="label-section"/>
+
+    <!-- Add / Edit Form -->
+    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="card-flat">
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="Nome" styleClass="label-muted"/>
+            <TextField fx:id="nameField" promptText="Nome da categoria"/>
+        </VBox>
+        <VBox spacing="4">
+            <Label text="Cor (hex)" styleClass="label-muted"/>
+            <TextField fx:id="colorField" promptText="#FF5733" prefWidth="100"/>
+        </VBox>
+        <VBox spacing="4">
+            <Label text=" " styleClass="label-muted"/>
+            <Button fx:id="saveBtn" text="Adicionar" onAction="#handleSave"/>
+        </VBox>
+    </HBox>
+
+    <Label fx:id="errorLabel" styleClass="label-error" wrapText="true"/>
+
+    <!-- Categories List -->
+    <TableView fx:id="categoryTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colColor" text="" prefWidth="30"/>
+            <TableColumn fx:id="colName" text="Nome" prefWidth="200"/>
+            <TableColumn fx:id="colDefault" text="Default" prefWidth="60"/>
+            <TableColumn fx:id="colActions" text="Ações" prefWidth="160"/>
+        </columns>
+    </TableView>
+
+    <HBox alignment="CENTER_RIGHT">
+        <Button text="Fechar" styleClass="btn-outline" onAction="#handleClose"/>
+    </HBox>
+</VBox>

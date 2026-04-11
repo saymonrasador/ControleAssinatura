@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="16" style="-fx-padding: 24;" prefWidth="480"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.subtrack.controller.SubscriptionDialogController">
+
+    <Label fx:id="titleLabel" text="Nova Assinatura" styleClass="label-section"/>
+
+    <VBox spacing="4">
+        <Label text="Nome *" styleClass="label-muted"/>
+        <TextField fx:id="nameField" promptText="ex: Netflix, Spotify"/>
+    </VBox>
+
+    <HBox spacing="12">
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="Valor *" styleClass="label-muted"/>
+            <TextField fx:id="priceField" promptText="R$0,00"/>
+        </VBox>
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="Periodicidade *" styleClass="label-muted"/>
+            <ComboBox fx:id="periodicityCombo" maxWidth="Infinity"/>
+        </VBox>
+    </HBox>
+
+    <VBox spacing="4">
+        <Label text="Data de Compra *" styleClass="label-muted"/>
+        <DatePicker fx:id="purchaseDatePicker" maxWidth="Infinity"/>
+    </VBox>
+
+    <HBox spacing="12">
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="Categoria" styleClass="label-muted"/>
+            <ComboBox fx:id="categoryCombo" maxWidth="Infinity"/>
+        </VBox>
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="Método de Pagamento" styleClass="label-muted"/>
+            <ComboBox fx:id="paymentMethodCombo" maxWidth="Infinity"/>
+        </VBox>
+    </HBox>
+
+    <CheckBox fx:id="autoRenewCheck" text="Renovação Automática" selected="true"/>
+
+    <Label fx:id="errorLabel" styleClass="label-error" wrapText="true"/>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Cancelar" styleClass="btn-outline" onAction="#handleCancel"/>
+        <Button fx:id="saveBtn" text="Salvar" onAction="#handleSave"/>
+    </HBox>
+</VBox>
