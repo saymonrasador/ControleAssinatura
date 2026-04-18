@@ -21,29 +21,18 @@ public class DateUtil {
      * Preserva o dia do mês original quando possível; caso contrário, usa o último
      * dia válido.
      *
-     * Sempre calcula a partir da data original de compra (não incrementalmente)
-     * para evitar desvio de dia (ex: 31 de janeiro → 28 de fevereiro → 28 de março
-     * em vez de 31 de março).
+     * Retorna purchaseDate + 1 período (mensal ou anual).
      */
     public static LocalDate calculateNextDueDate(LocalDate purchaseDate, Periodicity periodicity) {
-        LocalDate now = LocalDate.now();
         int originalDay = purchaseDate.getDayOfMonth();
-        int periods = 0;
-        LocalDate next;
-
-        do {
-            periods++;
-            YearMonth targetYm;
-            if (periodicity == Periodicity.MENSA) {
-                targetYm = YearMonth.from(purchaseDate).plusMonths(periods);
-            } else {
-                targetYm = YearMonth.from(purchaseDate).plusYears(periods);
-            }
-            int clampedDay = Math.min(originalDay, targetYm.lengthOfMonth());
-            next = targetYm.atDay(clampedDay);
-        } while (!next.isAfter(now));
-
-        return next;
+        YearMonth targetYm;
+        if (periodicity == Periodicity.MENSAL) {
+            targetYm = YearMonth.from(purchaseDate).plusMonths(1);
+        } else {
+            targetYm = YearMonth.from(purchaseDate).plusYears(1);
+        }
+        int clampedDay = Math.min(originalDay, targetYm.lengthOfMonth());
+        return targetYm.atDay(clampedDay);
     }
 
     /**

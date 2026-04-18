@@ -22,7 +22,7 @@ public class CategoryManagerController {
     @FXML
     private TextField nameField;
     @FXML
-    private TextField colorField;
+    private ColorPicker colorPicker;
     @FXML
     private Button saveBtn;
     @FXML
@@ -122,7 +122,11 @@ public class CategoryManagerController {
     private void startEditing(Category cat) {
         editingCategory = cat;
         nameField.setText(cat.getName());
-        colorField.setText(cat.getColorHex() != null ? cat.getColorHex() : "");
+        try {
+            colorPicker.setValue(cat.getColorHex() != null ? Color.web(cat.getColorHex()) : Color.GRAY);
+        } catch (Exception e) {
+            colorPicker.setValue(Color.GRAY);
+        }
         saveBtn.setText("Atualizar");
     }
 
@@ -131,7 +135,10 @@ public class CategoryManagerController {
         errorLabel.setText("");
         String userId = SessionManager.getCurrentUserId();
         String name = nameField.getText();
-        String color = colorField.getText();
+        String color = String.format("#%02X%02X%02X",
+                (int) (colorPicker.getValue().getRed() * 255),
+                (int) (colorPicker.getValue().getGreen() * 255),
+                (int) (colorPicker.getValue().getBlue() * 255));
 
         String error;
         if (editingCategory != null) {
@@ -160,7 +167,7 @@ public class CategoryManagerController {
 
     private void clearForm() {
         nameField.clear();
-        colorField.clear();
+        colorPicker.setValue(Color.WHITE);
         editingCategory = null;
         saveBtn.setText("Adicionar");
     }

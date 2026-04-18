@@ -41,14 +41,26 @@
     -fx-background-color: transparent;
 }
 .scroll-bar {
-    -fx-background-color: #ffffff;
+    -fx-background-color: #e8e8e8;
+    -fx-pref-width: 12;
+    -fx-pref-height: 12;
+    -fx-background-radius: 6;
+}
+.scroll-bar .track {
+    -fx-background-color: #e8e8e8;
+    -fx-background-radius: 6;
 }
 .scroll-bar .thumb {
-    -fx-background-color: #cccccc;
-    -fx-background-radius: 4;
+    -fx-background-color: #a0a0a0;
+    -fx-background-radius: 6;
+    -fx-min-width: 10;
+    -fx-min-height: 10;
 }
 .scroll-bar .thumb:hover {
-    -fx-background-color: #999999;
+    -fx-background-color: #777777;
+}
+.scroll-bar .thumb:pressed {
+    -fx-background-color: #555555;
 }
 .scroll-bar .increment-button, .scroll-bar .decrement-button {
     -fx-background-color: transparent;
@@ -89,11 +101,6 @@
 .label-success {
     -fx-text-fill: #4ecca3;
     -fx-font-size: 13px;
-}
-
-.label-muted {
-    -fx-text-fill: #999999;
-    -fx-font-size: 12px;
 }
 
 /* --- Cards --- */

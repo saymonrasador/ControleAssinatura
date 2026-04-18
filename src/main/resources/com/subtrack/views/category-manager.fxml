@@ -17,8 +17,8 @@
             <TextField fx:id="nameField" promptText="Nome da categoria"/>
         </VBox>
         <VBox spacing="4">
-            <Label text="Cor (hex)" styleClass="label-muted"/>
-            <TextField fx:id="colorField" promptText="#FF5733" prefWidth="100"/>
+            <Label text="Cor" styleClass="label-muted"/>
+            <ColorPicker fx:id="colorPicker" prefWidth="100"/>
         </VBox>
         <VBox spacing="4">
             <Label text=" " styleClass="label-muted"/>

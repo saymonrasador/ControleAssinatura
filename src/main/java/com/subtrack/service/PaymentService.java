@@ -30,6 +30,19 @@ public class PaymentService {
      * @return mensagem de erro ou null em caso de sucesso
      */
     public String registerPayment(String subscriptionId) {
+        return registerPayment(subscriptionId, -1, LocalDate.now());
+    }
+
+    /**
+     * Registra um pagamento com valor e data customizados.
+     * Se amount <= 0, usa o preço da assinatura.
+     *
+     * @param subscriptionId ID da assinatura
+     * @param amount         Valor a registrar (usa o preço da assinatura se <= 0)
+     * @param paymentDate    Data do pagamento
+     * @return mensagem de erro ou null em caso de sucesso
+     */
+    public String registerPayment(String subscriptionId, double amount, LocalDate paymentDate) {
         Subscription sub = subscriptionRepository.findById(subscriptionId)
                 .orElseThrow(() -> new RuntimeException("Assinatura não encontrada"));
 
@@ -49,12 +62,14 @@ public class PaymentService {
                         .orElse("Desconhecido")
                 : "Desconhecido";
 
+        double finalAmount = amount > 0 ? amount : sub.getPrice();
+
         // Cria registro de pagamento imutável
         PaymentRecord record = new PaymentRecord();
         record.setId(UUID.randomUUID().toString());
         record.setSubscriptionId(subscriptionId);
-        record.setPaymentDate(LocalDate.now());
-        record.setAmount(sub.getPrice());
+        record.setPaymentDate(paymentDate);
+        record.setAmount(finalAmount);
         record.setCompetence(competence);
         record.setSubscriptionNameSnapshot(sub.getName());
         record.setCategoryNameSnapshot(categoryName);

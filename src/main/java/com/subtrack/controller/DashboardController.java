@@ -152,7 +152,14 @@ public class DashboardController {
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : box);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    Subscription sub = getTableView().getItems().get(getIndex());
+                    boolean isPago = sub.getStatus() == SubscriptionStatus.PAGO;
+                    payBtn.setDisable(isPago);
+                    setGraphic(box);
+                }
             }
         });
     }
@@ -300,14 +307,26 @@ public class DashboardController {
     }
 
     private void handlePaySubscription(Subscription sub) {
-        String error = paymentService.registerPayment(sub.getId());
-        if (error != null) {
-            showAlert("Erro ao registrar pagamento", error, Alert.AlertType.WARNING);
-        } else {
-            showAlert("Registrar Pagamento",
-                    "Pagamento de '" + sub.getName() + "' salvo com sucesso.",
-                    Alert.AlertType.INFORMATION);
+        try {
+            FXMLLoader loader = NavigationManager.loadFXML("pay-confirmation-dialog.fxml");
+            Parent root = loader.load();
+            PayConfirmationController ctrl = loader.getController();
+
+            Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.initStyle(StageStyle.UNDECORATED);
+            dialog.setTitle("Confirmar Pagamento");
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(
+                    getClass().getResource("/com/subtrack/styles/style.css").toExternalForm());
+            dialog.setScene(scene);
+            ctrl.setDialogStage(dialog);
+            ctrl.setSubscription(sub);
+            dialog.showAndWait();
             loadData();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Erro", "Não foi possível abrir o diálogo de pagamento.", Alert.AlertType.ERROR);
         }
     }
 

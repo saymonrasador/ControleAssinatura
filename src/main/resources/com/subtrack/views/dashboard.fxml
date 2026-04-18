@@ -45,7 +45,6 @@
                 <VBox styleClass="spending-card" spacing="8" minWidth="180">
                     <Label text="Assinaturas Ativas" styleClass="label-section"/>
                     <Label fx:id="activeCountLabel" text="0" styleClass="spending-amount"/>
-                    <Label text="assinaturas rastreadas" styleClass="label-muted"/>
                 </VBox>
             </HBox>
 
@@ -60,7 +59,7 @@
             </HBox>
 
             <!-- Content: Table + Charts -->
-            <SplitPane dividerPositions="0.6" VBox.vgrow="ALWAYS">
+            <SplitPane dividerPositions="0.65" VBox.vgrow="ALWAYS">
                 <!-- Subscriptions Table -->
                 <TableView fx:id="subscriptionTable" VBox.vgrow="ALWAYS">
                     <columns>
@@ -71,7 +70,7 @@
                         <TableColumn fx:id="colCategory" text="Categoria" prefWidth="110"/>
                         <TableColumn fx:id="colPayMethod" text="Método de Pagamento" prefWidth="110"/>
                         <TableColumn fx:id="colStatus" text="Status" prefWidth="80"/>
-                        <TableColumn fx:id="colActions" text="Actions" prefWidth="140"/>
+                        <TableColumn fx:id="colActions" text="Actions" prefWidth="230"/>
                     </columns>
                 </TableView>
 

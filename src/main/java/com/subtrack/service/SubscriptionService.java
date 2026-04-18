@@ -137,7 +137,7 @@ public class SubscriptionService {
                 newStatus = SubscriptionStatus.ATRASADO;
             } else {
                 long daysUntilDue = ChronoUnit.DAYS.between(now, nextDue);
-                if (daysUntilDue <= alertDaysBefore && !sub.isAutoRenew()) {
+                if (daysUntilDue <= alertDaysBefore) {
                     newStatus = SubscriptionStatus.ALERTA;
                 } else {
                     newStatus = SubscriptionStatus.PENDENTE;

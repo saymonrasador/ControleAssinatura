@@ -22,7 +22,7 @@ public class PaymentMethodManagerController {
     @FXML
     private TextField nameField;
     @FXML
-    private TextField colorField;
+    private ColorPicker colorPicker;
     @FXML
     private Button saveBtn;
     @FXML
@@ -122,7 +122,11 @@ public class PaymentMethodManagerController {
     private void startEditing(PaymentMethod pm) {
         editingMethod = pm;
         nameField.setText(pm.getName());
-        colorField.setText(pm.getColorHex() != null ? pm.getColorHex() : "");
+        try {
+            colorPicker.setValue(pm.getColorHex() != null ? Color.web(pm.getColorHex()) : Color.GRAY);
+        } catch (Exception e) {
+            colorPicker.setValue(Color.GRAY);
+        }
         saveBtn.setText("Atualizar");
     }
 
@@ -131,7 +135,10 @@ public class PaymentMethodManagerController {
         errorLabel.setText("");
         String userId = SessionManager.getCurrentUserId();
         String name = nameField.getText();
-        String color = colorField.getText();
+        String color = String.format("#%02X%02X%02X",
+                (int) (colorPicker.getValue().getRed() * 255),
+                (int) (colorPicker.getValue().getGreen() * 255),
+                (int) (colorPicker.getValue().getBlue() * 255));
 
         String error;
         if (editingMethod != null) {
@@ -160,7 +167,7 @@ public class PaymentMethodManagerController {
 
     private void clearForm() {
         nameField.clear();
-        colorField.clear();
+        colorPicker.setValue(Color.WHITE);
         editingMethod = null;
         saveBtn.setText("Adicionar");
     }

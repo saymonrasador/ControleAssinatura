@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="20" style="-fx-padding: 28; -fx-background-color: #ffffff; -fx-background-radius: 12;"
+      prefWidth="420"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.subtrack.controller.PayConfirmationController">
+
+    <!-- Header -->
+    <VBox spacing="4">
+        <Label text="💳 Confirmar Pagamento" styleClass="label-section"/>
+        <Label fx:id="subscriptionNameLabel" styleClass="label-subtitle" wrapText="true"/>
+    </VBox>
+
+    <Separator/>
+
+    <!-- Valor do Pagamento -->
+    <VBox spacing="6">
+        <Label text="Valor do Pagamento (R$)" styleClass="label-muted"/>
+        <TextField fx:id="amountField" promptText="0,00"/>
+    </VBox>
+
+    <!-- Data do Pagamento -->
+    <VBox spacing="6">
+        <Label text="Data do Pagamento" styleClass="label-muted"/>
+        <DatePicker fx:id="paymentDatePicker" maxWidth="Infinity"/>
+    </VBox>
+
+    <Label fx:id="errorLabel" styleClass="label-error" wrapText="true"/>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Cancelar" styleClass="btn-outline" onAction="#handleCancel"/>
+        <Button fx:id="confirmBtn" text="Registrar Pagamento" onAction="#handleConfirm"/>
+    </HBox>
+
+</VBox>

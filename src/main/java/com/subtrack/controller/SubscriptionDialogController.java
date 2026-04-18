@@ -50,7 +50,7 @@ public class SubscriptionDialogController {
         String userId = SessionManager.getCurrentUserId();
 
         periodicityCombo.getItems().addAll(Periodicity.values());
-        periodicityCombo.setValue(Periodicity.MENSA);
+        periodicityCombo.setValue(Periodicity.MENSAL);
 
         List<Category> categories = categoryService.getAllByUserId(userId);
         categoryCombo.getItems().addAll(categories);

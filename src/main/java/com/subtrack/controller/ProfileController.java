@@ -60,7 +60,7 @@ public class ProfileController {
             return;
         }
         try {
-            spendingLimit = Double.parseDouble(spendingLimitField.getText().trim());
+            spendingLimit = Double.parseDouble(spendingLimitField.getText().trim().replace(",", "."));
         } catch (NumberFormatException e) {
             feedbackLabel.getStyleClass().add("label-error");
             feedbackLabel.setText("O limite de gastos deve ser um número válido.");
@@ -72,8 +72,7 @@ public class ProfileController {
             feedbackLabel.getStyleClass().add("label-error");
             feedbackLabel.setText(error);
         } else {
-            feedbackLabel.getStyleClass().add("label-success");
-            feedbackLabel.setText("Preferências salvas com sucesso!");
+            dialogStage.close();
         }
     }
 

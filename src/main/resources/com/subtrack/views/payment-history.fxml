@@ -35,15 +35,16 @@
             </HBox>
 
             <!-- Content: Table + Chart -->
-            <SplitPane dividerPositions="0.65" VBox.vgrow="ALWAYS">
+            <SplitPane dividerPositions="0.47" VBox.vgrow="ALWAYS">
                 <TableView fx:id="historyTable">
                     <columns>
+                        <TableColumn fx:id="colCompetence" text="Ciclo" prefWidth="100"/>
                         <TableColumn fx:id="colSubscription" text="Assinaturas" prefWidth="150"/>
                         <TableColumn fx:id="colCategory" text="Categoria" prefWidth="120"/>
                         <TableColumn fx:id="colPayMethod" text="Método de Pagamento" prefWidth="120"/>
                         <TableColumn fx:id="colAmount" text="Valor" prefWidth="80"/>
-                        <TableColumn fx:id="colDate" text="Data" prefWidth="100"/>
-                        <TableColumn fx:id="colCompetence" text="Ciclo" prefWidth="80"/>
+                        <TableColumn fx:id="colDate" text="Data Pagamento" prefWidth="120"/>
+                        
                     </columns>
                 </TableView>
 
