@@ -33,15 +33,32 @@
                 <Button text="📋 Histórico de Pagamentos" styleClass="btn-secondary" onAction="#handlePaymentHistory"/>
             </HBox>
 
-            <!-- Spending Summary -->
+            <!-- Spending Summary: 3 cards side by side -->
             <HBox spacing="16">
+                <!-- Card 1: Gasto Mensal -->
                 <VBox styleClass="spending-card" HBox.hgrow="ALWAYS" spacing="8">
-                    <Label text="Gastos Mensais" styleClass="label-section"/>
+                    <Label text="Gasto Mensal" styleClass="label-section"/>
                     <Label fx:id="spendingLabel" text="R$0,00" styleClass="spending-amount"/>
                     <Label fx:id="limitLabel" text="Sem limite definido" styleClass="spending-limit"/>
                     <ProgressBar fx:id="spendingProgress" progress="0" maxWidth="Infinity"
                                  prefHeight="10"/>
                 </VBox>
+
+                <!-- Card 2: Limite de Gastos (middle, visible only when limit is set) -->
+                <VBox fx:id="spendingGaugeContainer" styleClass="spending-card,spending-gauge-container"
+                      HBox.hgrow="ALWAYS" spacing="8"
+                      managed="false" visible="false">
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label text="Limite de Gastos" styleClass="label-section"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="spendingPercentLabel" text="0%" styleClass="spending-percent-label"/>
+                    </HBox>
+                    <ProgressBar fx:id="spendingGaugeBar" progress="0" maxWidth="Infinity"
+                                 prefHeight="30" styleClass="spending-gauge-bar"/>
+                    <Label fx:id="spendingGaugeInfo" text="" styleClass="spending-gauge-info"/>
+                </VBox>
+
+                <!-- Card 3: Assinaturas Ativas -->
                 <VBox styleClass="spending-card" spacing="8" minWidth="180">
                     <Label text="Assinaturas Ativas" styleClass="label-section"/>
                     <Label fx:id="activeCountLabel" text="0" styleClass="spending-amount"/>
@@ -77,9 +94,9 @@
                 <!-- Charts Panel -->
                 <VBox spacing="10" style="-fx-padding: 0 0 0 10;">
                     <PieChart fx:id="categoryPieChart" title="Gastos por Categoria"
-                              prefHeight="240" legendVisible="true" labelsVisible="false"/>
+                              prefHeight="280" legendVisible="false" labelsVisible="false"/>
                     <PieChart fx:id="paymentMethodPieChart" title="Gastos por Método de Pagamento"
-                              prefHeight="240" legendVisible="true" labelsVisible="false"/>
+                              prefHeight="280" legendVisible="false" labelsVisible="false"/>
                 </VBox>
             </SplitPane>
         </VBox>

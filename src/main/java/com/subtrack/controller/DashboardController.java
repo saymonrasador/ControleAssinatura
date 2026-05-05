@@ -16,6 +16,7 @@ import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -40,6 +41,15 @@ public class DashboardController {
     private ProgressBar spendingProgress;
     @FXML
     private Label activeCountLabel;
+
+    @FXML
+    private VBox spendingGaugeContainer;
+    @FXML
+    private ProgressBar spendingGaugeBar;
+    @FXML
+    private Label spendingPercentLabel;
+    @FXML
+    private Label spendingGaugeInfo;
 
     @FXML
     private TextField searchField;
@@ -254,11 +264,51 @@ public class DashboardController {
             } else {
                 spendingProgress.setStyle("-fx-accent: #4ecca3;");
             }
+
+            // --- Gauge Bar (barra de limite no topo) ---
+            spendingGaugeContainer.setVisible(true);
+            spendingGaugeContainer.setManaged(true);
+
+            double percent = ratio * 100.0;
+            spendingPercentLabel.setText(String.format("%.0f%%", percent));
+            spendingGaugeBar.setProgress(ratio);
+
+            // Interpola a cor de branco (#FFFFFF) para vermelho (#FF0000) conforme o %
+            String barColor = interpolateColor(ratio);
+            spendingGaugeBar.setStyle("-fx-accent: " + barColor + ";");
+
+            // Texto da cor do percentual também muda
+            spendingPercentLabel.setStyle("-fx-text-fill: " + barColor + ";");
+
+            spendingGaugeInfo.setText(String.format("R$%.2f de R$%.2f", monthlySpending, limit));
         } else {
             limitLabel.setText("Sem limite definido");
             spendingProgress.setProgress(0);
+
+            // Esconde o gauge bar quando não há limite
+            spendingGaugeContainer.setVisible(false);
+            spendingGaugeContainer.setManaged(false);
         }
     }
+
+    /**
+     * Interpola uma cor de branco (#FFFFFF) para vermelho (#FF0000)
+     * com base na proporção (0.0 = branco, 1.0 = vermelho).
+     */
+    private String interpolateColor(double ratio) {
+        ratio = Math.max(0, Math.min(ratio, 1.0));
+        // De branco (255, 255, 255) para vermelho (255, 0, 0)
+        int r = 255;
+        int g = (int) (255 * (1 - ratio));
+        int b = (int) (255 * (1 - ratio));
+        return String.format("#%02X%02X%02X", r, g, b);
+    }
+
+    private static final String[] PIE_COLORS = {
+            "#003d82", "#0066cc", "#4ecca3", "#ffc107",
+            "#9b59b6", "#3498db", "#e67e22", "#1abc9c",
+            "#e74c3c", "#2ecc71", "#f39c12", "#8e44ad"
+    };
 
     private void updateCharts(List<? extends Subscription> subs) {
         // Gráfico de pizza por categoria
@@ -267,6 +317,7 @@ public class DashboardController {
         categoryPieChart.getData().clear();
         categoryData.forEach((name, amount) -> categoryPieChart.getData().add(new PieChart.Data(
                 String.format("%s (R$%.0f)", name, amount), amount)));
+        applyPieChartColors(categoryPieChart);
 
         // Gráfico de pizza por método de pagamento
         Map<String, Double> pmData = dashboardService.getSpendingByPaymentMethod(
@@ -274,6 +325,42 @@ public class DashboardController {
         paymentMethodPieChart.getData().clear();
         pmData.forEach((name, amount) -> paymentMethodPieChart.getData().add(new PieChart.Data(
                 String.format("%s (R$%.0f)", name, amount), amount)));
+        applyPieChartColors(paymentMethodPieChart);
+    }
+
+    /**
+     * Aplica cores às fatias do gráfico de pizza e instala tooltips
+     * que mostram o nome e valor ao passar o mouse sobre cada fatia.
+     */
+    private void applyPieChartColors(PieChart chart) {
+        double total = chart.getData().stream().mapToDouble(PieChart.Data::getPieValue).sum();
+
+        for (int i = 0; i < chart.getData().size(); i++) {
+            PieChart.Data data = chart.getData().get(i);
+            String color = PIE_COLORS[i % PIE_COLORS.length];
+            javafx.scene.Node node = data.getNode();
+
+            // Aplica cor à fatia
+            node.setStyle("-fx-pie-color: " + color + ";");
+            node.setCursor(javafx.scene.Cursor.HAND);
+
+            // Calcula percentual
+            double percent = (total > 0) ? (data.getPieValue() / total * 100.0) : 0;
+
+            // Cria tooltip com nome, valor e percentual
+            Tooltip tooltip = new Tooltip(String.format("%s\n%.1f%%", data.getName(), percent));
+            tooltip.setShowDelay(javafx.util.Duration.millis(100));
+            tooltip.setShowDuration(javafx.util.Duration.seconds(30));
+            tooltip.setStyle(
+                "-fx-background-color: #1a1a1a; " +
+                "-fx-text-fill: white; " +
+                "-fx-font-size: 13px; " +
+                "-fx-font-weight: bold; " +
+                "-fx-padding: 8; " +
+                "-fx-background-radius: 6;"
+            );
+            Tooltip.install(node, tooltip);
+        }
     }
 
     private void updateNotificationButton() {

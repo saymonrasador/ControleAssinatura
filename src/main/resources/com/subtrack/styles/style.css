@@ -402,6 +402,32 @@
 .default-color6.chart-pie { -fx-pie-color: #e67e22; }
 .default-color7.chart-pie { -fx-pie-color: #1abc9c; }
 
+/* Legend symbols — match pie slice colors */
+.default-color0.chart-pie-legend-symbol { -fx-background-color: #003d82; -fx-background-radius: 4; }
+.default-color1.chart-pie-legend-symbol { -fx-background-color: #0066cc; -fx-background-radius: 4; }
+.default-color2.chart-pie-legend-symbol { -fx-background-color: #4ecca3; -fx-background-radius: 4; }
+.default-color3.chart-pie-legend-symbol { -fx-background-color: #ffc107; -fx-background-radius: 4; }
+.default-color4.chart-pie-legend-symbol { -fx-background-color: #9b59b6; -fx-background-radius: 4; }
+.default-color5.chart-pie-legend-symbol { -fx-background-color: #3498db; -fx-background-radius: 4; }
+.default-color6.chart-pie-legend-symbol { -fx-background-color: #e67e22; -fx-background-radius: 4; }
+.default-color7.chart-pie-legend-symbol { -fx-background-color: #1abc9c; -fx-background-radius: 4; }
+
+/* Legend container styling */
+.chart-legend {
+    -fx-background-color: rgba(245, 245, 245, 0.8);
+    -fx-background-radius: 8;
+    -fx-padding: 8 12;
+}
+.chart-legend-item {
+    -fx-text-fill: #333333;
+    -fx-font-size: 12px;
+}
+.chart-legend-item-symbol {
+    -fx-pref-width: 12;
+    -fx-pref-height: 12;
+    -fx-background-radius: 4;
+}
+
 /* Bar chart */
 .chart-bar {
     -fx-bar-fill: #003d82;
@@ -540,6 +566,38 @@
 .spending-limit {
     -fx-font-size: 16px;
     -fx-text-fill: #666666;
+}
+
+/* --- Spending Gauge Bar (Limite de Gastos) --- */
+.spending-gauge-container {
+    /* Herda estilos de .spending-card, sem duplicar */
+}
+
+.spending-gauge-bar {
+    -fx-background-color: transparent;
+    -fx-background-radius: 14;
+    -fx-padding: 0;
+    -fx-pref-height: 30;
+}
+.spending-gauge-bar .track {
+    -fx-background-color: #e8e8e8;
+    -fx-background-radius: 14;
+}
+.spending-gauge-bar .bar {
+    -fx-background-color: -fx-accent;
+    -fx-background-radius: 14;
+    -fx-background-insets: 0;
+}
+
+.spending-percent-label {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1a1a;
+}
+
+.spending-gauge-info {
+    -fx-font-size: 13px;
+    -fx-text-fill: #999999;
 }
 
 /* --- Tab Pane (unused for now but included for future use) --- */
