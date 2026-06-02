@@ -101,13 +101,52 @@ public class DashboardController {
         String userId = SessionManager.getCurrentUserId();
         Profile profile = profileService.getProfile(userId);
 
-        // Generate alerts on dashboard load
-        notificationService.generateAlerts(userId, profile.getAlertDaysBefore());
+        // Generate alerts on dashboard load and capture new ones
+        java.util.List<com.subtrack.domain.Notification> newAlerts =
+                notificationService.generateAlerts(userId, profile.getAlertDaysBefore());
 
         setupTableColumns();
         setupFilters();
         loadData();
         updateNotificationButton();
+
+        // Show alert popup if there are new notifications
+        if (!newAlerts.isEmpty()) {
+            showAlertPopup(newAlerts);
+        }
+    }
+
+    /**
+     * Exibe o popup de alertas com as notificações recém-geradas.
+     * Após exibição, as notificações são marcadas como lidas.
+     */
+    private void showAlertPopup(java.util.List<com.subtrack.domain.Notification> alerts) {
+        try {
+            FXMLLoader loader = NavigationManager.loadFXML("alert-popup.fxml");
+            Parent root = loader.load();
+            AlertPopupController ctrl = loader.getController();
+
+            Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.initStyle(StageStyle.UNDECORATED);
+            dialog.setTitle("Alertas de Assinaturas");
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(
+                    getClass().getResource("/com/subtrack/styles/style.css").toExternalForm());
+            dialog.setScene(scene);
+            ctrl.setDialogStage(dialog);
+            ctrl.setAlerts(alerts);
+            dialog.showAndWait();
+
+            // Marca todas as notificações exibidas como lidas
+            for (com.subtrack.domain.Notification alert : alerts) {
+                notificationService.markAsRead(alert.getId());
+            }
+
+            updateNotificationButton();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setupTableColumns() {

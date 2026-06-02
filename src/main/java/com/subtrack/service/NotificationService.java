@@ -23,12 +23,15 @@ public class NotificationService {
     private final PaymentRecordRepository paymentRecordRepository = new PaymentRecordRepository();
 
     /**
-     * Gera notificações de alerta para assinaturas próximas do vencimento.
+     * Gera notificações de alerta para assinaturas com status Alerta, Atrasado ou Pendente.
      * Ignora ciclos já pagos e evita notificações duplicadas.
+     *
+     * @return lista de notificações recém-criadas (para exibição em popup)
      */
-    public void generateAlerts(String userId, int alertDaysBefore) {
+    public List<Notification> generateAlerts(String userId, int alertDaysBefore) {
         List<Subscription> subs = subscriptionRepository.findAllActiveByUserId(userId);
         LocalDate now = LocalDate.now();
+        List<Notification> newNotifications = new java.util.ArrayList<>();
 
         for (Subscription sub : subs) {
             String competence = DateUtil.getCurrentCompetence(sub.getNextDueDate());
@@ -40,7 +43,7 @@ public class NotificationService {
 
             long daysUntilDue = ChronoUnit.DAYS.between(now, sub.getNextDueDate());
 
-            // Gera alerta se estiver dentro da janela de alerta
+            // Gera alerta se estiver dentro da janela de alerta (status ALERTA)
             if (daysUntilDue >= 0 && daysUntilDue <= alertDaysBefore) {
                 // Verifica se já emitimos esta notificação
                 if (notificationRepository.existsBySubscriptionIdAndCompetence(sub.getId(), competence)) {
@@ -59,9 +62,10 @@ public class NotificationService {
                 notification.setSubscriptionId(sub.getId());
                 notification.setCreatedAt(LocalDateTime.now());
                 notificationRepository.create(notification);
+                newNotifications.add(notification);
             }
 
-            // Gera notificação para assinaturas vencidas
+            // Gera notificação para assinaturas vencidas (status ATRASADO)
             if (daysUntilDue < 0) {
                 String overdueKey = competence + "-VENCIDO";
                 if (notificationRepository.existsBySubscriptionIdAndCompetence(sub.getId(), overdueKey)) {
@@ -80,8 +84,33 @@ public class NotificationService {
                 notification.setSubscriptionId(sub.getId());
                 notification.setCreatedAt(LocalDateTime.now());
                 notificationRepository.create(notification);
+                newNotifications.add(notification);
+            }
+
+            // Gera notificação para assinaturas pendentes (status PENDENTE)
+            if (daysUntilDue > alertDaysBefore) {
+                String pendingKey = competence + "-PENDENTE";
+                if (notificationRepository.existsBySubscriptionIdAndCompetence(sub.getId(), pendingKey)) {
+                    continue;
+                }
+
+                Notification notification = new Notification();
+                notification.setId(UUID.randomUUID().toString());
+                notification.setUserId(userId);
+                notification.setTitle("Pendente: " + sub.getName() + " (" + pendingKey + ")");
+                notification.setMessage(
+                        String.format("'%s' vence em %d dia(s) em %s. Valor: $%.2f",
+                                sub.getName(), daysUntilDue,
+                                DateUtil.formatDate(sub.getNextDueDate()), sub.getPrice()));
+                notification.setRead(false);
+                notification.setSubscriptionId(sub.getId());
+                notification.setCreatedAt(LocalDateTime.now());
+                notificationRepository.create(notification);
+                newNotifications.add(notification);
             }
         }
+
+        return newNotifications;
     }
 
     public List<Notification> getUnread(String userId) {

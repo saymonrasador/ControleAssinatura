@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="16" style="-fx-padding: 24; -fx-border-color: #cccccc; -fx-border-width: 1;" prefWidth="520" prefHeight="440"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.subtrack.controller.AlertPopupController">
+
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="⚠ Alertas de Assinaturas" styleClass="label-section"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="alertCountLabel" styleClass="label-subtitle"/>
+    </HBox>
+
+    <ListView fx:id="alertList" VBox.vgrow="ALWAYS"/>
+
+    <HBox alignment="CENTER_RIGHT">
+        <Button text="Entendido" styleClass="button" onAction="#handleClose"/>
+    </HBox>
+</VBox>

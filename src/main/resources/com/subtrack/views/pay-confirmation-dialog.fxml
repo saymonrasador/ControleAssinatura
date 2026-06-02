@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox spacing="20" style="-fx-padding: 28; -fx-background-color: #ffffff; -fx-background-radius: 12;"
+<VBox spacing="20" style="-fx-padding: 28; -fx-background-color: #ffffff; -fx-background-radius: 12; -fx-border-color: #cccccc; -fx-border-width: 1; -fx-border-radius: 12;"
       prefWidth="420"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.subtrack.controller.PayConfirmationController">

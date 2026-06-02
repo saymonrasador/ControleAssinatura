@@ -92,6 +92,27 @@ public class PaymentService {
     }
 
     /**
+     * Retorna assinaturas distintas (nome → id) presentes no histórico de pagamentos do usuário.
+     */
+    public java.util.Map<String, String> getDistinctSubscriptions(String userId) {
+        return paymentRecordRepository.findDistinctSubscriptionsByUserId(userId);
+    }
+
+    /**
+     * Retorna categorias distintas presentes no histórico de pagamentos do usuário.
+     */
+    public List<String> getDistinctCategories(String userId) {
+        return paymentRecordRepository.findDistinctCategoriesByUserId(userId);
+    }
+
+    /**
+     * Retorna métodos de pagamento distintos presentes no histórico de pagamentos do usuário.
+     */
+    public List<String> getDistinctPaymentMethods(String userId) {
+        return paymentRecordRepository.findDistinctPaymentMethodsByUserId(userId);
+    }
+
+    /**
      * Retorna registros de pagamento filtrados.
      */
     public List<PaymentRecord> getFilteredHistory(String userId, String subscriptionId,

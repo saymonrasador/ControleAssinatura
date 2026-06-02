@@ -2,6 +2,7 @@ package com.subtrack.controller;
 
 import com.subtrack.domain.Notification;
 import com.subtrack.domain.Subscription;
+import com.subtrack.domain.SubscriptionStatus;
 import com.subtrack.service.NotificationService;
 import com.subtrack.service.SubscriptionService;
 import com.subtrack.util.NavigationManager;
@@ -90,16 +91,16 @@ public class NotificationController {
 
                 if (item.getTitle().startsWith("Venceu")) {
                     statusText = "ATRASADO";
-                    tagColor = "#ff6b6b";
-                    tagTextColor = "#ffffff";
+                    tagColor = item.isRead() ? "#e4b7b7ff" : "#ff6b6b";
+                    tagTextColor = item.isRead() ? "#999999" : "#ffffff";
                 } else if (item.getTitle().startsWith("Vence em breve")) {
                     statusText = "ALERTA";
-                    tagColor = "#ffc107";
-                    tagTextColor = "#1a1a1a";
+                    tagColor = item.isRead() ? "#dcd3b6ff" : "#ffc107";
+                    tagTextColor = item.isRead() ? "#999999" : "#1a1a1a";
                 } else {
                     statusText = "PENDENTE";
-                    tagColor = "#e0e0e0";
-                    tagTextColor = "#1a1a1a";
+                    tagColor = item.isRead() ? "#d8d8d8" : "#e0e0e0";
+                    tagTextColor = item.isRead() ? "#999999" : "#1a1a1a";
                     isPendente = true;
                 }
 
@@ -111,10 +112,14 @@ public class NotificationController {
                                 "-fx-font-size: 11px; -fx-font-weight: bold;",
                         tagColor, tagTextColor));
 
-                // Read indicator
+                // Read indicator — títulos de notificações lidas ficam em cinza claro
                 String prefix = item.isRead() ? "" : "● ";
                 Label titleLabel = new Label(prefix + item.getTitle());
-                titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #1a1a1a;");
+                if (item.isRead()) {
+                    titleLabel.setStyle("-fx-font-weight: normal; -fx-font-size: 13px; -fx-text-fill: #b0b0b0;");
+                } else {
+                    titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #1a1a1a;");
+                }
 
                 HBox topRow = new HBox(8, titleLabel, statusTag);
                 topRow.setAlignment(Pos.CENTER_LEFT);
@@ -133,11 +138,26 @@ public class NotificationController {
                 if (isPendente && item.getSubscriptionId() != null) {
                     Region spacer = new Region();
                     HBox.setHgrow(spacer, Priority.ALWAYS);
-                    Button payBtn = new Button("💰 Pagar");
-                    payBtn.getStyleClass().addAll("btn-small");
-                    payBtn.setStyle("-fx-background-color: #4ecca3; -fx-text-fill: #ffffff; " +
-                            "-fx-background-radius: 6; -fx-cursor: hand;");
-                    payBtn.setOnAction(e -> handlePayFromNotification(item));
+
+                    // Verifica se a assinatura já está paga neste ciclo
+                    Optional<Subscription> subOpt = subscriptionService.getById(item.getSubscriptionId());
+                    boolean isPago = subOpt.isPresent()
+                            && subOpt.get().getStatus() == SubscriptionStatus.PAGO;
+
+                    Button payBtn;
+                    if (isPago) {
+                        payBtn = new Button("✅ Pago");
+                        payBtn.getStyleClass().addAll("btn-small");
+                        payBtn.setStyle("-fx-background-color: #cccccc; -fx-text-fill: #666666; " +
+                                "-fx-background-radius: 6;");
+                        payBtn.setDisable(true);
+                    } else {
+                        payBtn = new Button("💰 Pagar");
+                        payBtn.getStyleClass().addAll("btn-small");
+                        payBtn.setStyle("-fx-background-color: #4ecca3; -fx-text-fill: #ffffff; " +
+                                "-fx-background-radius: 6; -fx-cursor: hand;");
+                        payBtn.setOnAction(e -> handlePayFromNotification(item));
+                    }
                     bottomRow.getChildren().addAll(spacer, payBtn);
                 }
 

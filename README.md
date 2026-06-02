@@ -22,6 +22,7 @@ Um aplicativo desktop JavaFX para gerenciar assinaturas digitais recorrentes e p
 ## Pré-requisitos
 
 - JDK 21 ou superior
+- Instalar a versão
 
 ## Rodar projeto
 

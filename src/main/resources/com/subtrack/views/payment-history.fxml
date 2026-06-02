@@ -25,8 +25,8 @@
             <HBox spacing="10" alignment="CENTER_LEFT" styleClass="card-flat">
                 <Label text="Filtros:" styleClass="label-muted"/>
                 <ComboBox fx:id="subscriptionFilter" promptText="Assinatura" prefWidth="160"/>
-                <TextField fx:id="categoryFilterField" promptText="Categoria" prefWidth="130"/>
-                <TextField fx:id="payMethodFilterField" promptText="Método de Pagamento" prefWidth="130"/>
+                <ComboBox fx:id="categoryFilter" promptText="Categoria" prefWidth="160"/>
+                <ComboBox fx:id="payMethodFilter" promptText="Método de Pagamento" prefWidth="180"/>
                 <TextField fx:id="competenceField" promptText="Ciclo (YYYY-MM)" prefWidth="120"/>
                 <DatePicker fx:id="startDatePicker" promptText="De" prefWidth="130"/>
                 <DatePicker fx:id="endDatePicker" promptText="Até" prefWidth="130"/>
@@ -34,8 +34,8 @@
                 <Button text="Limpar" styleClass="btn-outline,btn-small" onAction="#handleClear"/>
             </HBox>
 
-            <!-- Content: Table + Chart -->
-            <SplitPane dividerPositions="0.47" VBox.vgrow="ALWAYS">
+            <!-- Content: Table + Pie Chart -->
+            <SplitPane dividerPositions="0.47" VBox.vgrow="ALWAYS" prefHeight="340">
                 <TableView fx:id="historyTable">
                     <columns>
                         <TableColumn fx:id="colCompetence" text="Ciclo" prefWidth="100"/>
@@ -44,17 +44,38 @@
                         <TableColumn fx:id="colPayMethod" text="Método de Pagamento" prefWidth="120"/>
                         <TableColumn fx:id="colAmount" text="Valor" prefWidth="80"/>
                         <TableColumn fx:id="colDate" text="Data Pagamento" prefWidth="120"/>
-                        
                     </columns>
                 </TableView>
 
                 <VBox spacing="10" style="-fx-padding: 0 0 0 10;">
-                    <PieChart fx:id="historyPieChart" title="Pagamentos por Categoria"
-                              prefHeight="280" legendVisible="true" labelsVisible="false"/>
-                    <Label fx:id="totalLabel" text="Total: $0.00"
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="Visualizar por:" styleClass="label-muted"/>
+                        <ComboBox fx:id="chartModeSelector" prefWidth="200"
+                                  onAction="#handleChartModeChange"/>
+                    </HBox>
+                    <PieChart fx:id="historyPieChart"
+                              prefHeight="240" legendVisible="true" labelsVisible="false"/>
+                    <Label fx:id="totalLabel" text="Total: R$0,00"
                            styleClass="spending-amount" style="-fx-font-size: 20px;"/>
                 </VBox>
             </SplitPane>
+
+            <!-- Trend Line Chart -->
+            <VBox spacing="8" styleClass="card-flat" VBox.vgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" spacing="0">
+                    <Label text="Evolução de Gastos por Ciclo" styleClass="label-subtitle"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                </HBox>
+                <LineChart fx:id="trendChart" VBox.vgrow="ALWAYS" prefHeight="220"
+                           animated="true" createSymbols="true" legendVisible="false">
+                    <xAxis>
+                        <CategoryAxis fx:id="trendXAxis" label="Ciclo"/>
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis fx:id="trendYAxis" label="Total (R$)" forceZeroInRange="true"/>
+                    </yAxis>
+                </LineChart>
+            </VBox>
         </VBox>
     </center>
 </BorderPane>

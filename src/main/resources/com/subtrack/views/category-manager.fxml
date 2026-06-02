@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox spacing="16" style="-fx-padding: 24;" prefWidth="500" prefHeight="500"
+<VBox spacing="16" style="-fx-padding: 24; -fx-border-color: #cccccc; -fx-border-width: 1;" prefWidth="520" prefHeight="500"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.subtrack.controller.CategoryManagerController">
 

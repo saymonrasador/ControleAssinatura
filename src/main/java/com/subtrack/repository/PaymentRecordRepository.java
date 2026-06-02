@@ -123,6 +123,72 @@ public class PaymentRecordRepository {
         }
     }
 
+    /**
+     * Retorna assinaturas distintas (nome → id) presentes no histórico de pagamentos de um usuário.
+     */
+    public java.util.Map<String, String> findDistinctSubscriptionsByUserId(String userId) {
+        String sql = "SELECT DISTINCT pr.subscription_id, pr.subscription_name_snapshot FROM payment_records pr " +
+                "JOIN subscriptions s ON pr.subscription_id = s.id " +
+                "WHERE s.user_id = ? AND pr.subscription_name_snapshot IS NOT NULL " +
+                "ORDER BY pr.subscription_name_snapshot";
+        java.util.Map<String, String> map = new java.util.LinkedHashMap<>();
+        try (PreparedStatement ps = DatabaseConfig.getConnection().prepareStatement(sql)) {
+            ps.setString(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    map.put(rs.getString("subscription_name_snapshot"), rs.getString("subscription_id"));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar assinaturas distintas do histórico", e);
+        }
+        return map;
+    }
+
+    /**
+     * Retorna categorias distintas dos registros de pagamento de um usuário.
+     */
+    public List<String> findDistinctCategoriesByUserId(String userId) {
+        String sql = "SELECT DISTINCT pr.category_name_snapshot FROM payment_records pr " +
+                "JOIN subscriptions s ON pr.subscription_id = s.id " +
+                "WHERE s.user_id = ? AND pr.category_name_snapshot IS NOT NULL " +
+                "ORDER BY pr.category_name_snapshot";
+        List<String> list = new ArrayList<>();
+        try (PreparedStatement ps = DatabaseConfig.getConnection().prepareStatement(sql)) {
+            ps.setString(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(rs.getString("category_name_snapshot"));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar categorias distintas", e);
+        }
+        return list;
+    }
+
+    /**
+     * Retorna métodos de pagamento distintos dos registros de pagamento de um usuário.
+     */
+    public List<String> findDistinctPaymentMethodsByUserId(String userId) {
+        String sql = "SELECT DISTINCT pr.payment_method_name_snapshot FROM payment_records pr " +
+                "JOIN subscriptions s ON pr.subscription_id = s.id " +
+                "WHERE s.user_id = ? AND pr.payment_method_name_snapshot IS NOT NULL " +
+                "ORDER BY pr.payment_method_name_snapshot";
+        List<String> list = new ArrayList<>();
+        try (PreparedStatement ps = DatabaseConfig.getConnection().prepareStatement(sql)) {
+            ps.setString(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(rs.getString("payment_method_name_snapshot"));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar métodos de pagamento distintos", e);
+        }
+        return list;
+    }
+
     private List<PaymentRecord> queryList(String sql, String param) {
         List<PaymentRecord> list = new ArrayList<>();
         try (PreparedStatement ps = DatabaseConfig.getConnection().prepareStatement(sql)) {
