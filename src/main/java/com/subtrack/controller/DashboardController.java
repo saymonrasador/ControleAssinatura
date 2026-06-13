@@ -101,18 +101,21 @@ public class DashboardController {
         String userId = SessionManager.getCurrentUserId();
         Profile profile = profileService.getProfile(userId);
 
-        // Generate alerts on dashboard load and capture new ones
-        java.util.List<com.subtrack.domain.Notification> newAlerts =
-                notificationService.generateAlerts(userId, profile.getAlertDaysBefore());
+        // Gera/atualiza alertas e exibe popup com todos os alertas urgentes não lidos
+        notificationService.generateAlerts(userId, profile.getAlertDaysBefore());
 
         setupTableColumns();
         setupFilters();
         loadData();
         updateNotificationButton();
 
-        // Show alert popup if there are new notifications
-        if (!newAlerts.isEmpty()) {
-            showAlertPopup(newAlerts);
+        // Exibe popup com notificações de ALERTA e ATRASADO não lidas (novas ou reativadas)
+        java.util.List<com.subtrack.domain.Notification> urgentAlerts = notificationService.getUnread(userId)
+                .stream()
+                .filter(n -> n.getTitle().startsWith("Vence em breve") || n.getTitle().startsWith("Venceu"))
+                .collect(java.util.stream.Collectors.toList());
+        if (!urgentAlerts.isEmpty()) {
+            showAlertPopup(urgentAlerts);
         }
     }
 
@@ -137,11 +140,6 @@ public class DashboardController {
             ctrl.setDialogStage(dialog);
             ctrl.setAlerts(alerts);
             dialog.showAndWait();
-
-            // Marca todas as notificações exibidas como lidas
-            for (com.subtrack.domain.Notification alert : alerts) {
-                notificationService.markAsRead(alert.getId());
-            }
 
             updateNotificationButton();
         } catch (IOException e) {

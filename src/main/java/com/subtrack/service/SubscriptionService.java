@@ -134,10 +134,12 @@ public class SubscriptionService {
             LocalDate nextDue = sub.getNextDueDate();
 
             if (now.isAfter(nextDue)) {
-                newStatus = SubscriptionStatus.ATRASADO;
+                // Vencido com renovação automática = pagamento falhou → ATRASADO
+                // Vencido sem renovação automática = expirou naturalmente → ALERTA
+                newStatus = sub.isAutoRenew() ? SubscriptionStatus.ATRASADO : SubscriptionStatus.ALERTA;
             } else {
                 long daysUntilDue = ChronoUnit.DAYS.between(now, nextDue);
-                if (daysUntilDue <= alertDaysBefore) {
+                if (daysUntilDue <= alertDaysBefore && !sub.isAutoRenew()) {
                     newStatus = SubscriptionStatus.ALERTA;
                 } else {
                     newStatus = SubscriptionStatus.PENDENTE;

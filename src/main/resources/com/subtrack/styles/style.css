@@ -528,6 +528,22 @@
     -fx-font-weight: bold;
 }
 
+/* --- Notification List --- */
+.notification-list {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 4 0;
+}
+.notification-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+.notification-list .list-cell:selected,
+.notification-list .list-cell:focused,
+.notification-list .list-cell:hover {
+    -fx-background-color: transparent;
+}
+
 /* --- Login/Register Container --- */
 .auth-container {
     -fx-background-color: #f5f5f5;

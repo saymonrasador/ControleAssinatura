@@ -88,19 +88,23 @@ public class NotificationController {
                 String tagColor;
                 String tagTextColor;
                 boolean isPendente = false;
+                boolean isAtrasado = false;
+
+                boolean read = item.isRead();
 
                 if (item.getTitle().startsWith("Venceu")) {
                     statusText = "ATRASADO";
-                    tagColor = item.isRead() ? "#e4b7b7ff" : "#ff6b6b";
-                    tagTextColor = item.isRead() ? "#999999" : "#ffffff";
+                    tagColor = read ? "#e8c8c8" : "#ff6b6b";
+                    tagTextColor = read ? "#aaaaaa" : "#ffffff";
+                    isAtrasado = true;
                 } else if (item.getTitle().startsWith("Vence em breve")) {
                     statusText = "ALERTA";
-                    tagColor = item.isRead() ? "#dcd3b6ff" : "#ffc107";
-                    tagTextColor = item.isRead() ? "#999999" : "#1a1a1a";
+                    tagColor = read ? "#e8dfc0" : "#ff9800";
+                    tagTextColor = read ? "#aaaaaa" : "#ffffff";
                 } else {
                     statusText = "PENDENTE";
-                    tagColor = item.isRead() ? "#d8d8d8" : "#e0e0e0";
-                    tagTextColor = item.isRead() ? "#999999" : "#1a1a1a";
+                    tagColor = read ? "#d0d0d0" : "#5b9cf6";
+                    tagTextColor = read ? "#aaaaaa" : "#ffffff";
                     isPendente = true;
                 }
 
@@ -112,30 +116,29 @@ public class NotificationController {
                                 "-fx-font-size: 11px; -fx-font-weight: bold;",
                         tagColor, tagTextColor));
 
-                // Read indicator — títulos de notificações lidas ficam em cinza claro
-                String prefix = item.isRead() ? "" : "● ";
+                // Title — bold/dark when unread, muted when read
+                String prefix = read ? "" : "● ";
                 Label titleLabel = new Label(prefix + item.getTitle());
-                if (item.isRead()) {
-                    titleLabel.setStyle("-fx-font-weight: normal; -fx-font-size: 13px; -fx-text-fill: #b0b0b0;");
-                } else {
-                    titleLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #1a1a1a;");
-                }
+                titleLabel.setStyle(String.format(
+                        "-fx-font-weight: %s; -fx-font-size: 13px; -fx-text-fill: %s;",
+                        read ? "normal" : "bold",
+                        read ? "#b0b0b0" : "#1a1a1a"));
 
                 HBox topRow = new HBox(8, titleLabel, statusTag);
                 topRow.setAlignment(Pos.CENTER_LEFT);
 
                 Label messageLabel = new Label(item.getMessage());
-                messageLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #666666;");
+                messageLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: " + (read ? "#c0c0c0" : "#555555") + ";");
                 messageLabel.setWrapText(true);
 
                 Label dateLabel = new Label(item.getCreatedAt().format(FMT));
-                dateLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #999999;");
+                dateLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: " + (read ? "#cccccc" : "#888888") + ";");
 
                 HBox bottomRow = new HBox(8, dateLabel);
                 bottomRow.setAlignment(Pos.CENTER_LEFT);
 
-                // Add pay button for pending notifications
-                if (isPendente && item.getSubscriptionId() != null) {
+                // Add pay button for pending and overdue notifications
+                if ((isPendente || isAtrasado) && item.getSubscriptionId() != null) {
                     Region spacer = new Region();
                     HBox.setHgrow(spacer, Priority.ALWAYS);
 
@@ -161,26 +164,19 @@ public class NotificationController {
                     bottomRow.getChildren().addAll(spacer, payBtn);
                 }
 
-                VBox cellBox = new VBox(4, topRow, messageLabel, bottomRow);
-                cellBox.setPadding(new Insets(8));
+                VBox cellBox = new VBox(6, topRow, messageLabel, bottomRow);
+                cellBox.setPadding(new Insets(10, 12, 10, 12));
 
                 if (!item.isRead()) {
-                    cellBox.setStyle("-fx-background-color: #eef2f7; -fx-background-radius: 8;");
+                    cellBox.setStyle("-fx-background-color: #eef2f7; -fx-background-radius: 8; " +
+                            "-fx-border-color: #c8d8f0; -fx-border-radius: 8; -fx-border-width: 1;");
                 } else {
-                    cellBox.setStyle("-fx-background-color: transparent;");
+                    cellBox.setStyle("-fx-background-color: #f8f9fa; -fx-background-radius: 6;");
                 }
 
                 setGraphic(cellBox);
-                setStyle("-fx-padding: 2;");
-
-                // Mark as read on click
-                setOnMouseClicked(e -> {
-                    if (!item.isRead()) {
-                        notificationService.markAsRead(item.getId());
-                        item.setRead(true);
-                        updateItem(item, false);
-                    }
-                });
+                setStyle("-fx-padding: 4 6; -fx-background-color: transparent;");
+                setOnMouseClicked(null);
             }
         }
     }

@@ -14,7 +14,7 @@
         <Button text="Marcar Tudo como Lido" styleClass="btn-outline,btn-small" onAction="#handleMarkAll"/>
     </HBox>
 
-    <ListView fx:id="notificationList" VBox.vgrow="ALWAYS"/>
+    <ListView fx:id="notificationList" VBox.vgrow="ALWAYS" styleClass="notification-list"/>
 
     <HBox alignment="CENTER_RIGHT">
         <Button text="Fechar" styleClass="btn-outline" onAction="#handleClose"/>

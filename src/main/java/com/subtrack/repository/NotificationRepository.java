@@ -82,6 +82,28 @@ public class NotificationRepository {
         }
     }
 
+    public void resetToUnread(String subscriptionId, String competenceInTitle) {
+        String sql = "UPDATE notifications SET is_read = 0, read_at = NULL WHERE subscription_id = ? AND title LIKE ? AND is_read = 1";
+        try (PreparedStatement ps = DatabaseConfig.getConnection().prepareStatement(sql)) {
+            ps.setString(1, subscriptionId);
+            ps.setString(2, "%" + competenceInTitle + "%");
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao resetar notificação para não lida", e);
+        }
+    }
+
+    public void deleteBySubscriptionIdAndCompetence(String subscriptionId, String competenceInTitle) {
+        String sql = "DELETE FROM notifications WHERE subscription_id = ? AND title LIKE ?";
+        try (PreparedStatement ps = DatabaseConfig.getConnection().prepareStatement(sql)) {
+            ps.setString(1, subscriptionId);
+            ps.setString(2, "%" + competenceInTitle + "%");
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao excluir notificação", e);
+        }
+    }
+
     private List<Notification> queryList(String sql, String userId) {
         List<Notification> list = new ArrayList<>();
         try (PreparedStatement ps = DatabaseConfig.getConnection().prepareStatement(sql)) {

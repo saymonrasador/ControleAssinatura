@@ -1,0 +1,225 @@
+SUBTRACK — GERENCIADOR DE ASSINATURAS DIGITAIS
+================================================
+
+
+SOBRE O PROJETO
+---------------
+
+O SubTrack é um aplicativo desktop desenvolvido inteiramente em Java com JavaFX, criado
+para resolver um problema comum no dia a dia: a dificuldade de acompanhar todos os
+serviços de assinatura digital que uma pessoa contrata ao longo do tempo. Netflix, Spotify,
+Amazon Prime, iCloud, ferramentas de produtividade, plataformas de streaming — cada serviço
+tem sua própria data de cobrança, seu próprio valor e seu próprio ciclo de renovação. Sem
+uma ferramenta centralizada, é fácil perder o controle e acabar pagando por assinaturas
+esquecidas ou ser surpreendido por cobranças inesperadas.
+
+O SubTrack resolve isso oferecendo um painel único onde o usuário pode cadastrar todas as
+suas assinaturas, definir categorias, registrar pagamentos, acompanhar o histórico financeiro
+e receber alertas automáticos antes de cada vencimento. O aplicativo foi desenvolvido com
+foco em simplicidade de uso e confiabilidade dos dados, funcionando completamente de forma
+offline, sem necessidade de conexão com internet ou conta em nenhum serviço externo.
+
+
+TECNOLOGIAS
+-----------
+
+O projeto foi construído sobre Java 21, utilizando o sistema de módulos do Java (JPMS) para
+garantir encapsulamento adequado entre os pacotes. A interface gráfica é construída com
+JavaFX 21.0.2, a plataforma oficial da Oracle para aplicações desktop em Java. As telas são
+descritas em arquivos FXML, que separam a definição visual do código de lógica, e estilizadas
+com CSS personalizado que dá ao aplicativo um visual moderno e limpo.
+
+Para o banco de dados, foi escolhido o SQLite na versão 3.45.3.0. O SQLite é uma biblioteca
+de banco de dados relacional embutida diretamente no aplicativo, o que significa que não há
+necessidade de instalar nenhum servidor de banco de dados separado. Todos os dados são
+armazenados em um único arquivo no computador do usuário, dentro da pasta
+%USERPROFILE%\.subtrack\subtrack.db no Windows. Esse arquivo é criado automaticamente na
+primeira vez que o aplicativo é executado.
+
+As senhas dos usuários são protegidas com BCrypt, um algoritmo de hash seguro fornecido
+pela biblioteca jbcrypt 0.4. O BCrypt aplica um fator de custo 12 com salt automático, o
+que torna ataques de força bruta computacionalmente inviáveis mesmo que alguém tenha acesso
+ao arquivo do banco de dados. Para a construção e execução do projeto, é utilizado o Maven
+com o Maven Wrapper incluído no repositório, ou seja, não é necessário instalar o Maven
+separadamente na máquina — basta ter o JDK 21 instalado e executar o comando
+".\mvnw.cmd javafx:run" no terminal.
+
+
+COMO O APLICATIVO FUNCIONA
+--------------------------
+
+Ao abrir o SubTrack pela primeira vez, o usuário é recebido pela tela de login. Caso ainda
+não tenha uma conta, pode acessar a tela de cadastro, onde informa nome, e-mail e senha.
+O sistema valida o formato do e-mail e exige que a senha tenha no mínimo oito caracteres.
+Após o cadastro, são criados automaticamente uma categoria padrão chamada "Geral" e um
+método de pagamento padrão chamado "Outros", para que o usuário já possa cadastrar
+assinaturas imediatamente sem precisar configurar nada antes.
+
+Depois de autenticado, o usuário acessa o Dashboard, que é a tela central do aplicativo.
+No topo, são exibidos três cartões de resumo: o total gasto mensalmente em todas as
+assinaturas ativas, o limite de orçamento mensal definido pelo usuário (quando configurado)
+e a quantidade de assinaturas ativas. O cálculo do gasto mensal é inteligente: para
+assinaturas com periodicidade anual, o sistema divide o valor total por doze para obter
+o equivalente mensal, garantindo que o orçamento reflita a realidade do custo mês a mês.
+
+Logo abaixo dos cartões, o usuário encontra uma barra de filtros que permite buscar
+assinaturas por nome, filtrar por categoria, por método de pagamento e por status. A tabela
+de assinaturas é atualizada em tempo real conforme os filtros são aplicados, sem necessidade
+de nenhum botão de busca. Cada linha da tabela exibe o nome da assinatura, categoria, método
+de pagamento, valor, data de vencimento e status atual. Ao final de cada linha, há ações
+rápidas para editar, excluir ou marcar a assinatura como paga.
+
+Na parte inferior do Dashboard, dois gráficos de pizza apresentam a distribuição dos gastos:
+um mostrando quanto cada categoria representa no total gasto, e outro mostrando a participação
+de cada método de pagamento. Esses gráficos são atualizados automaticamente sempre que o
+usuário modifica suas assinaturas.
+
+
+GERENCIAMENTO DE ASSINATURAS
+-----------------------------
+
+Para cadastrar uma nova assinatura, o usuário clica no botão correspondente e preenche um
+formulário com as informações da assinatura: nome do serviço, valor cobrado, periodicidade
+(mensal ou anual), data de compra ou início, a categoria à qual pertence, o método de
+pagamento utilizado e se a assinatura possui renovação automática habilitada.
+
+A partir da data de compra e da periodicidade, o sistema calcula automaticamente a próxima
+data de vencimento. Quando uma assinatura é marcada como paga, o sistema avança a data de
+vencimento para o próximo ciclo, preservando sempre o dia original do mês (por exemplo, uma
+assinatura com vencimento no dia 31 terá seu próximo vencimento ajustado para o último dia
+do mês nos meses que não possuem 31 dias).
+
+Cada assinatura possui um status que é calculado automaticamente pelo sistema toda vez que
+as assinaturas são carregadas. O status PENDENTE indica que o pagamento ainda está distante.
+O status ALERTA é aplicado quando a data de vencimento está dentro da janela de antecedência
+configurada no perfil do usuário (por padrão, 3 dias antes). O status ATRASADO é aplicado
+quando a assinatura está vencida e possui renovação automática habilitada, indicando que
+provavelmente houve uma cobrança automática que precisa ser registrada. O status PAGO indica
+que o pagamento do ciclo atual já foi registrado.
+
+Quando o usuário exclui uma assinatura, ela não é removida do banco de dados de forma
+permanente. Em vez disso, ela é marcada como inativa, garantindo que todo o histórico de
+pagamentos associado a ela seja preservado. Essa abordagem, conhecida como soft delete,
+é fundamental para manter a integridade do histórico financeiro do usuário.
+
+
+CATEGORIAS E METODOS DE PAGAMENTO
+-----------------------------------
+
+O sistema permite que o usuário organize suas assinaturas em categorias personalizadas, como
+"Entretenimento", "Produtividade", "Educação" ou qualquer outra que faça sentido para ele.
+Cada categoria possui um nome e uma cor em formato hexadecimal, que é utilizada nos gráficos
+do dashboard e na listagem de assinaturas para facilitar a identificação visual.
+
+Os métodos de pagamento funcionam de forma análoga às categorias: o usuário pode cadastrar
+entradas como "Cartão Nubank", "Cartão Inter", "Débito Automático", cada uma com nome e cor
+próprios. Isso permite identificar facilmente quais assinaturas estão vinculadas a cada
+forma de pagamento, o que é especialmente útil ao conferir a fatura do cartão.
+
+Ao excluir uma categoria ou método de pagamento, o sistema não permite que assinaturas fiquem
+sem uma categoria ou método associado. Antes de realizar a exclusão, o sistema reatribui
+automaticamente todas as assinaturas vinculadas para a categoria ou método padrão do usuário.
+Isso garante que nenhum dado fique inconsistente no banco de dados, mesmo após exclusões.
+
+
+HISTORICO DE PAGAMENTOS
+------------------------
+
+Cada vez que o usuário marca uma assinatura como paga, o sistema cria um registro permanente
+e imutável no histórico. Esse registro armazena não apenas o valor e a data do pagamento, mas
+também cópias dos nomes da assinatura, da categoria e do método de pagamento no momento em
+que o pagamento foi feito. Essas cópias são chamadas de snapshots.
+
+A razão para armazenar snapshots é preservar a fidelidade histórica dos dados. Se o usuário
+renomear uma categoria de "Streaming" para "Entretenimento", os pagamentos feitos antes dessa
+mudança continuarão aparecendo no histórico com o nome "Streaming", pois foi assim que estavam
+categorizados na época. Sem os snapshots, o histórico seria distorcido por renomeações futuras.
+
+O sistema também previne o registro duplicado de pagamentos dentro do mesmo ciclo mensal.
+Cada combinação de assinatura e competência (identificada no formato ano-mês, como "2026-06")
+é única no banco de dados. Isso significa que, mesmo que o usuário tente registrar o mesmo
+pagamento duas vezes no mesmo mês, o sistema impedirá a duplicata. A tela de histórico de
+pagamentos permite busca e filtragem por assinatura, categoria, método de pagamento e
+intervalo de datas.
+
+
+SISTEMA DE NOTIFICACOES
+------------------------
+
+O SubTrack gera alertas automáticos para informar o usuário sobre assinaturas que estão
+próximas do vencimento ou que já estão atrasadas. Esses alertas são gerados toda vez que o
+usuário abre o dashboard, com base na data atual e nas configurações de perfil.
+
+O sistema de notificações funciona em três camadas. A primeira camada detecta assinaturas
+vencidas com renovação automática habilitada e gera um alerta de "ATRASADO", indicando que
+provavelmente houve uma cobrança automática no cartão ou conta bancária que ainda não foi
+registrada no sistema. A segunda camada detecta assinaturas cujo vencimento está dentro da
+janela de antecedência e gera um alerta de "ALERTA", funcionando como um lembrete para que
+o usuário separe o valor necessário. A terceira camada gera alertas de "PENDENTE" para
+assinaturas que vencem em breve, mas ainda fora da janela de alerta imediato.
+
+O sistema é inteligente na geração de alertas: se um alerta para uma determinada assinatura
+já existe, ele é reutilizado e atualizado em vez de gerar um alerta duplicado. Ao abrir o
+dashboard, se houver alertas urgentes não lidos, um popup é exibido automaticamente listando
+as assinaturas que precisam de atenção. O usuário pode marcar notificações como lidas
+individualmente ou todas de uma vez pela tela de notificações.
+
+
+PERFIL E CONFIGURACOES
+-----------------------
+
+Na tela de perfil, o usuário pode ajustar dois parâmetros que afetam o comportamento do
+sistema. O primeiro é a quantidade de dias de antecedência com que deseja receber alertas
+antes do vencimento de uma assinatura. O valor padrão é de 3 dias, mas pode ser aumentado
+ou reduzido conforme a preferência. O segundo parâmetro é o limite mensal de gastos. Quando
+definido, o dashboard exibe um cartão adicional com uma barra de progresso mostrando qual
+percentual do orçamento já foi comprometido pelas assinaturas ativas.
+
+
+ARQUITETURA E ESTRUTURA DO CODIGO
+-----------------------------------
+
+O projeto foi organizado seguindo uma arquitetura em camadas, onde cada camada tem uma
+responsabilidade bem definida e não mistura responsabilidades de outras camadas.
+
+A camada de domínio contém as classes de entidade puras — User, Profile, Subscription,
+Category, PaymentMethod, PaymentRecord e Notification — além dos enums Periodicity e
+SubscriptionStatus. Essas classes representam os conceitos do negócio sem nenhuma dependência
+de framework ou de infraestrutura.
+
+A camada de repositório é responsável pelo acesso ao banco de dados. Cada entidade possui
+seu próprio repositório, que executa as operações de leitura e escrita usando JDBC puro com
+PreparedStatements. A ausência de um ORM foi uma escolha deliberada para manter o código
+simples, previsível e sem camadas de abstração desnecessárias.
+
+A camada de serviço contém toda a lógica de negócio: cálculo de status das assinaturas,
+geração de notificações, registro de pagamentos com prevenção de duplicatas, cálculo de
+gastos para o dashboard, entre outras responsabilidades. Os serviços orquestram as chamadas
+aos repositórios e aplicam as regras do sistema.
+
+A camada de controladores contém as classes JavaFX que se comunicam com as telas FXML. Os
+controladores são responsáveis apenas por capturar eventos da interface, chamar os serviços
+adequados e atualizar os componentes visuais com os resultados. Toda a lógica de negócio
+fica nos serviços, nunca nos controladores.
+
+Além dessas camadas, o projeto possui um conjunto de utilitários: o SessionManager mantém
+o usuário autenticado durante a sessão como um singleton; o NavigationManager centraliza a
+troca de telas e garante que o CSS seja sempre aplicado corretamente; o DateUtil concentra
+os cálculos de datas, como próxima data de vencimento e identificação de competência mensal;
+e o ValidationUtil reúne as regras de validação reutilizáveis, como formato de e-mail, tamanho
+mínimo de senha e formato de cor hexadecimal.
+
+
+SEGURANCA DOS DADOS
+--------------------
+
+A segurança dos dados do usuário foi tratada com cuidado ao longo de todo o desenvolvimento.
+As senhas nunca são armazenadas em texto puro no banco de dados. O algoritmo BCrypt é aplicado
+com fator de custo 12 e salt aleatório gerado automaticamente, resultando em um hash diferente
+para a mesma senha a cada cadastro. Isso garante que, mesmo que o arquivo do banco de dados
+seja acessado por terceiros, as senhas dos usuários permaneçam protegidas.
+
+Todas as interações com o banco de dados são feitas exclusivamente através de PreparedStatements
+parametrizados, que eliminam a possibilidade de ataques de SQL injection. As integridade das
+relações entre tabelas é garantida por chaves estrangeiras com a opção PRAGMA foreign_keys = ON
+ativa em todas as conexões com o SQLite.

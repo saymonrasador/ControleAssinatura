@@ -43,10 +43,15 @@ public class NotificationService {
 
             long daysUntilDue = ChronoUnit.DAYS.between(now, sub.getNextDueDate());
 
-            // Gera alerta se estiver dentro da janela de alerta (status ALERTA)
-            if (daysUntilDue >= 0 && daysUntilDue <= alertDaysBefore) {
-                // Verifica se já emitimos esta notificação
+            // Gera alerta para assinaturas sem renovação automática:
+            // cobre tanto a janela de alerta (próximas do vencimento) quanto as já vencidas
+            if (!sub.isAutoRenew() && daysUntilDue <= alertDaysBefore) {
+                // Remove notificação "Venceu" legada gerada antes desta correção de regra de negócio
+                String oldOverdueKey = competence + "-VENCIDO";
+                notificationRepository.deleteBySubscriptionIdAndCompetence(sub.getId(), oldOverdueKey);
+
                 if (notificationRepository.existsBySubscriptionIdAndCompetence(sub.getId(), competence)) {
+                    notificationRepository.resetToUnread(sub.getId(), competence);
                     continue;
                 }
 
@@ -54,10 +59,14 @@ public class NotificationService {
                 notification.setId(UUID.randomUUID().toString());
                 notification.setUserId(userId);
                 notification.setTitle("Vence em breve: " + sub.getName() + " (" + competence + ")");
-                notification.setMessage(
-                        String.format("'%s' vence em %d dia(s) em %s. Valor: $%.2f",
+                String msg = daysUntilDue < 0
+                        ? String.format("'%s' venceu há %d dia(s) em %s sem renovação automática. Valor: $%.2f",
+                                sub.getName(), Math.abs(daysUntilDue),
+                                DateUtil.formatDate(sub.getNextDueDate()), sub.getPrice())
+                        : String.format("'%s' vence em %d dia(s) em %s. Valor: $%.2f",
                                 sub.getName(), daysUntilDue,
-                                DateUtil.formatDate(sub.getNextDueDate()), sub.getPrice()));
+                                DateUtil.formatDate(sub.getNextDueDate()), sub.getPrice());
+                notification.setMessage(msg);
                 notification.setRead(false);
                 notification.setSubscriptionId(sub.getId());
                 notification.setCreatedAt(LocalDateTime.now());
@@ -65,10 +74,11 @@ public class NotificationService {
                 newNotifications.add(notification);
             }
 
-            // Gera notificação para assinaturas vencidas (status ATRASADO)
-            if (daysUntilDue < 0) {
+            // Gera notificação ATRASADO apenas para assinaturas com renovação automática vencidas
+            if (sub.isAutoRenew() && daysUntilDue < 0) {
                 String overdueKey = competence + "-VENCIDO";
                 if (notificationRepository.existsBySubscriptionIdAndCompetence(sub.getId(), overdueKey)) {
+                    notificationRepository.resetToUnread(sub.getId(), overdueKey);
                     continue;
                 }
 
@@ -91,6 +101,7 @@ public class NotificationService {
             if (daysUntilDue > alertDaysBefore) {
                 String pendingKey = competence + "-PENDENTE";
                 if (notificationRepository.existsBySubscriptionIdAndCompetence(sub.getId(), pendingKey)) {
+                    notificationRepository.resetToUnread(sub.getId(), pendingKey);
                     continue;
                 }
 
