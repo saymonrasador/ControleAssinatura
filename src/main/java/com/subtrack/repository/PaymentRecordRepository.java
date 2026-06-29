@@ -189,6 +189,19 @@ public class PaymentRecordRepository {
         return list;
     }
 
+    /**
+     * Exclui um registro de pagamento pelo seu ID.
+     */
+    public void delete(String id) {
+        String sql = "DELETE FROM payment_records WHERE id = ?";
+        try (PreparedStatement ps = DatabaseConfig.getConnection().prepareStatement(sql)) {
+            ps.setString(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao excluir registro de pagamento", e);
+        }
+    }
+
     private List<PaymentRecord> queryList(String sql, String param) {
         List<PaymentRecord> list = new ArrayList<>();
         try (PreparedStatement ps = DatabaseConfig.getConnection().prepareStatement(sql)) {

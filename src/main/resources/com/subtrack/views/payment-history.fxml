@@ -35,7 +35,7 @@
             </HBox>
 
             <!-- Content: Table + Pie Chart -->
-            <SplitPane dividerPositions="0.47" VBox.vgrow="ALWAYS" prefHeight="340">
+            <SplitPane dividerPositions="0.53" VBox.vgrow="ALWAYS" prefHeight="340">
                 <TableView fx:id="historyTable">
                     <columns>
                         <TableColumn fx:id="colCompetence" text="Ciclo" prefWidth="100"/>
@@ -44,6 +44,7 @@
                         <TableColumn fx:id="colPayMethod" text="Método de Pagamento" prefWidth="120"/>
                         <TableColumn fx:id="colAmount" text="Valor" prefWidth="80"/>
                         <TableColumn fx:id="colDate" text="Data Pagamento" prefWidth="120"/>
+                        <TableColumn fx:id="colActions" text="" prefWidth="60" sortable="false" resizable="false"/>
                     </columns>
                 </TableView>
 

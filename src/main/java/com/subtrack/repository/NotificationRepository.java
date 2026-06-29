@@ -93,6 +93,16 @@ public class NotificationRepository {
         }
     }
 
+    public void deleteAllByUserId(String userId) {
+        String sql = "DELETE FROM notifications WHERE user_id = ?";
+        try (PreparedStatement ps = DatabaseConfig.getConnection().prepareStatement(sql)) {
+            ps.setString(1, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao excluir todas as notificações", e);
+        }
+    }
+
     public void deleteBySubscriptionIdAndCompetence(String subscriptionId, String competenceInTitle) {
         String sql = "DELETE FROM notifications WHERE subscription_id = ? AND title LIKE ?";
         try (PreparedStatement ps = DatabaseConfig.getConnection().prepareStatement(sql)) {

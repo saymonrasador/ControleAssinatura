@@ -39,6 +39,7 @@ public class PaymentHistoryController {
     @FXML private TableColumn<PaymentRecord, String> colAmount;
     @FXML private TableColumn<PaymentRecord, String> colDate;
     @FXML private TableColumn<PaymentRecord, String> colCompetence;
+    @FXML private TableColumn<PaymentRecord, Void>   colActions;
 
     // ── Gráfico de pizza ─────────────────────────────────────────────────────
     @FXML private ComboBox<String> chartModeSelector;
@@ -82,6 +83,30 @@ public class PaymentHistoryController {
         colAmount      .setCellValueFactory(c -> new SimpleStringProperty(String.format("R$%.2f", c.getValue().getAmount())));
         colDate        .setCellValueFactory(c -> new SimpleStringProperty(DateUtil.formatDate(c.getValue().getPaymentDate())));
         colCompetence  .setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCompetence()));
+        setupActionsColumn();
+    }
+
+    /** Configura a coluna de ações com o botão de excluir (ícone de lixeira). */
+    private void setupActionsColumn() {
+        colActions.setCellFactory(col -> new TableCell<>() {
+            private final Button deleteBtn = new Button("🗑");
+
+            {
+                deleteBtn.getStyleClass().addAll("btn-danger", "btn-small");
+                deleteBtn.setCursor(Cursor.HAND);
+                Tooltip.install(deleteBtn, new Tooltip("Excluir registro"));
+                deleteBtn.setOnAction(e -> {
+                    PaymentRecord record = getTableView().getItems().get(getIndex());
+                    handleDelete(record);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : deleteBtn);
+            }
+        });
     }
 
     private void setupFilters() {
@@ -324,6 +349,27 @@ public class PaymentHistoryController {
         startDatePicker.setValue(null);
         endDatePicker  .setValue(null);
         loadData(null, null, null, null, null, null);
+    }
+
+    /** Exclui um registro de pagamento do histórico, após confirmação do usuário. */
+    private void handleDelete(PaymentRecord record) {
+        if (record == null) return;
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                String.format("Excluir o pagamento de '%s' (ciclo %s) no valor de R$%.2f?%n" +
+                                "Esta ação não pode ser desfeita.",
+                        record.getSubscriptionNameSnapshot(),
+                        record.getCompetence(),
+                        record.getAmount()),
+                ButtonType.YES, ButtonType.NO);
+        confirm.setTitle("Confirmar Exclusão");
+        confirm.setHeaderText(null);
+        confirm.showAndWait().ifPresent(bt -> {
+            if (bt == ButtonType.YES) {
+                paymentService.deletePaymentRecord(record.getId());
+                handleSearch(); // recarrega respeitando os filtros atuais
+            }
+        });
     }
 
     @FXML

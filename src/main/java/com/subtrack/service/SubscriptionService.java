@@ -122,21 +122,34 @@ public class SubscriptionService {
         if (!sub.isActive())
             return;
 
-        String currentCompetence = DateUtil.getCurrentCompetence(sub.getNextDueDate());
+        LocalDate now = LocalDate.now();
+
+        String competence = DateUtil.getCurrentCompetence(sub.getNextDueDate());
         boolean hasPaid = paymentRecordRepository
-                .findBySubscriptionIdAndCompetence(sub.getId(), currentCompetence).isPresent();
+                .findBySubscriptionIdAndCompetence(sub.getId(), competence).isPresent();
+
+        // Avança o ciclo: enquanto o ciclo atual estiver pago E o vencimento já
+        // tiver passado, rola o nextDueDate para o próximo período. Assim a
+        // assinatura permanece PAGO até o vencimento e só então volta ao ciclo
+        // seguinte (evita ficar "PAGO para sempre").
+        boolean advanced = false;
+        while (hasPaid && now.isAfter(sub.getNextDueDate())) {
+            sub.setNextDueDate(DateUtil.calculateNextDueDate(sub.getNextDueDate(), sub.getPeriodicity()));
+            competence = DateUtil.getCurrentCompetence(sub.getNextDueDate());
+            hasPaid = paymentRecordRepository
+                    .findBySubscriptionIdAndCompetence(sub.getId(), competence).isPresent();
+            advanced = true;
+        }
 
         SubscriptionStatus newStatus;
         if (hasPaid) {
             newStatus = SubscriptionStatus.PAGO;
         } else {
-            LocalDate now = LocalDate.now();
             LocalDate nextDue = sub.getNextDueDate();
 
             if (now.isAfter(nextDue)) {
-                // Vencido com renovação automática = pagamento falhou → ATRASADO
-                // Vencido sem renovação automática = expirou naturalmente → ALERTA
-                newStatus = sub.isAutoRenew() ? SubscriptionStatus.ATRASADO : SubscriptionStatus.ALERTA;
+                // Vencido e não pago → ATRASADO
+                newStatus = SubscriptionStatus.ATRASADO;
             } else {
                 long daysUntilDue = ChronoUnit.DAYS.between(now, nextDue);
                 if (daysUntilDue <= alertDaysBefore && !sub.isAutoRenew()) {
@@ -147,7 +160,7 @@ public class SubscriptionService {
             }
         }
 
-        if (sub.getStatus() != newStatus) {
+        if (advanced || sub.getStatus() != newStatus) {
             sub.setStatus(newStatus);
             subscriptionRepository.update(sub);
         }

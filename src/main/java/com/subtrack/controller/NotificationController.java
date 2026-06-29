@@ -47,6 +47,10 @@ public class NotificationController {
     public void initialize() {
         notificationList.setCellFactory(lv -> new NotificationCell());
         loadData();
+        // Marca todas como lidas ao abrir as notificações (limpa o badge de não lidas).
+        // A lista exibida mantém o destaque de "não lido" desta visualização; o banco
+        // já fica atualizado para a próxima abertura.
+        notificationService.markAllAsRead(SessionManager.getCurrentUserId());
     }
 
     private void loadData() {
@@ -56,9 +60,21 @@ public class NotificationController {
     }
 
     @FXML
-    private void handleMarkAll() {
-        notificationService.markAllAsRead(SessionManager.getCurrentUserId());
-        loadData();
+    private void handleDeleteAll() {
+        if (notificationList.getItems().isEmpty()) {
+            return;
+        }
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                "Excluir todas as notificações?\nEsta ação não pode ser desfeita.",
+                ButtonType.YES, ButtonType.NO);
+        confirm.setTitle("Confirmar Exclusão");
+        confirm.setHeaderText(null);
+        confirm.showAndWait().ifPresent(bt -> {
+            if (bt == ButtonType.YES) {
+                notificationService.deleteAll(SessionManager.getCurrentUserId());
+                loadData();
+            }
+        });
     }
 
     @FXML

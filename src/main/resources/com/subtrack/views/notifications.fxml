@@ -11,7 +11,7 @@
     <HBox alignment="CENTER_LEFT" spacing="10">
         <Label text="Notificações" styleClass="label-section"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button text="Marcar Tudo como Lido" styleClass="btn-outline,btn-small" onAction="#handleMarkAll"/>
+        <Button text="🗑 Excluir Todas" styleClass="btn-danger,btn-small" onAction="#handleDeleteAll"/>
     </HBox>
 
     <ListView fx:id="notificationList" VBox.vgrow="ALWAYS" styleClass="notification-list"/>

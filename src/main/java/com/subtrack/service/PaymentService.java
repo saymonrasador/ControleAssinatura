@@ -113,6 +113,13 @@ public class PaymentService {
     }
 
     /**
+     * Exclui um registro de pagamento do histórico pelo seu ID.
+     */
+    public void deletePaymentRecord(String recordId) {
+        paymentRecordRepository.delete(recordId);
+    }
+
+    /**
      * Retorna registros de pagamento filtrados.
      */
     public List<PaymentRecord> getFilteredHistory(String userId, String subscriptionId,
