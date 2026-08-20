@@ -1,6 +1,6 @@
 # SubTrack — Gerenciador de Assinaturas Digitais
 
-Aplicativo desktop JavaFX para gerenciamento centralizado de assinaturas digitais recorrentes. Controle gastos, receba alertas de vencimento, organize por categorias e acompanhe todo o histórico de pagamentos em um único lugar.
+Aplicativo desktop JavaFX para gerenciamento centralizado de assinaturas digitais recorrentes. Controle gastos, receba alertas de vencimento, organize por categorias e acompanhe todo o histórico de pagamentos em um único lugar!
 
 ---
 
